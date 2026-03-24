@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pirate's War Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d0f;
+  --bg2: #141418;
+  --bg3: #1a1a20;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --text: #e8e6e0;
+  --text2: #8a8780;
+  --text3: #4a4845;
+  --amber: #e8a020;
+  --amber-bg: rgba(232,160,32,0.12);
+  --amber-border: rgba(232,160,32,0.3);
+  --green: #4caf7d;
+  --green-bg: rgba(76,175,125,0.1);
+  --green-border: rgba(76,175,125,0.3);
+  --red: #e05050;
+  --red-bg: rgba(224,80,80,0.1);
+  --red-border: rgba(224,80,80,0.3);
+  --blue: #5b8fd4;
+  --blue-bg: rgba(91,143,212,0.1);
+  --blue-border: rgba(91,143,212,0.3);
+  --purple: #9b72e8;
+  --purple-bg: rgba(155,114,232,0.1);
+  --radius: 8px;
+  --radius-lg: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; min-height: 100vh; }
+.mono { font-family: 'Space Mono', monospace; }
+
+/* NAV */
+.nav { position: sticky; top: 0; z-index: 100; background: rgba(13,13,15,0.95); backdrop-filter: blur(8px); border-bottom: 0.5px solid var(--border2); padding: 0 1rem; display: flex; align-items: center; gap: 0; overflow-x: auto; scrollbar-width: none; }
+.nav::-webkit-scrollbar { display: none; }
+.nav-brand { font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; color: var(--amber); white-space: nowrap; padding: 14px 16px 14px 0; border-right: 0.5px solid var(--border2); margin-right: 8px; letter-spacing: 0.05em; }
+.nav-tab { padding: 14px 14px; font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.15s; flex-shrink: 0; background: none; border-top: none; border-left: none; border-right: none; font-family: 'Rajdhani', sans-serif; }
+.nav-tab:hover { color: var(--text); }
+.nav-tab.active { color: var(--amber); border-bottom-color: var(--amber); }
+
+/* LAYOUT */
+.page { display: none; max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+.page.active { display: block; }
+
+/* CARDS */
+.card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 10px; }
+.card-title { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--text3); text-transform: uppercase; margin-bottom: 6px; font-family: 'Space Mono', monospace; }
+.card-h { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.card-body { font-size: 13px; color: var(--text2); line-height: 1.65; }
+
+/* ROWS */
+.row { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 0.5px solid var(--border); }
+.row:last-child { border-bottom: none; }
+.row-num { font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; color: var(--amber); min-width: 24px; padding-top: 2px; flex-shrink: 0; }
+.row-text { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.row-text strong { color: var(--text); font-weight: 600; }
+.row-time { font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; color: var(--amber); min-width: 54px; padding-top: 2px; flex-shrink: 0; }
+
+/* BADGES */
+.badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; font-family: 'Space Mono', monospace; letter-spacing: 0.02em; }
+.b-amber { background: var(--amber-bg); color: var(--amber); border: 0.5px solid var(--amber-border); }
+.b-green { background: var(--green-bg); color: var(--green); border: 0.5px solid var(--green-border); }
+.b-red { background: var(--red-bg); color: var(--red); border: 0.5px solid var(--red-border); }
+.b-blue { background: var(--blue-bg); color: var(--blue); border: 0.5px solid var(--blue-border); }
+.b-purple { background: var(--purple-bg); color: var(--purple); border: 0.5px solid rgba(155,114,232,0.3); }
+.b-gray { background: var(--bg3); color: var(--text2); border: 0.5px solid var(--border2); }
+
+/* METRICS GRID */
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+.metric { background: var(--bg3); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px; text-align: center; }
+.metric-num { font-family: 'Space Mono', monospace; font-size: 24px; font-weight: 700; color: var(--amber); line-height: 1; }
+.metric-lbl { font-size: 11px; color: var(--text3); margin-top: 4px; }
+.metric.green .metric-num { color: var(--green); }
+.metric.red .metric-num { color: var(--red); }
+.metric.blue .metric-num { color: var(--blue); }
+
+/* PROGRESS BAR */
+.pbar-wrap { background: var(--bg3); border-radius: 99px; height: 5px; overflow: hidden; margin: 8px 0 4px; }
+.pbar-fill { height: 100%; border-radius: 99px; background: var(--amber); transition: width 0.4s; }
+.pbar-fill.green { background: var(--green); }
+
+/* PAGE HEADER */
+.page-header { margin-bottom: 1.5rem; }
+.page-label { font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+.page-title { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.page-sub { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+/* SECTION LABEL */
+.sec-label { font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin: 1.25rem 0 0.6rem; }
+
+/* TASK ITEMS */
+.task-item { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 0.5px solid var(--border); cursor: pointer; transition: opacity 0.15s; }
+.task-item:last-child { border-bottom: none; }
+.task-item:hover { opacity: 0.85; }
+.task-cb { width: 17px; height: 17px; border: 1.5px solid var(--border2); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 1px; transition: all 0.15s; background: transparent; }
+.task-cb.done { background: var(--green-bg); border-color: var(--green); }
+.task-cb.done::after { content: ''; width: 4px; height: 8px; border: 2px solid var(--green); border-top: none; border-left: none; transform: rotate(45deg) translate(-1px,-1px); display: block; }
+.task-label { font-size: 13px; color: var(--text2); line-height: 1.55; }
+.task-label.done { text-decoration: line-through; color: var(--text3); }
+
+/* DAY CARD */
+.day-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 8px; transition: border-color 0.2s; }
+.day-card.complete { border-color: var(--green-border); background: rgba(76,175,125,0.05); }
+.day-card.current { border-color: var(--amber-border); }
+.day-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.day-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.day-card.complete .day-name { color: var(--green); }
+.day-card.current .day-name { color: var(--amber); }
+.day-progress { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text3); }
+
+/* TIMER */
+.timer-wrap { text-align: center; padding: 1rem 0 0.5rem; }
+.timer-phase { font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Space Mono', monospace; margin-bottom: 6px; }
+.timer-display { font-family: 'Space Mono', monospace; font-size: 60px; font-weight: 700; color: var(--text); line-height: 1; margin-bottom: 6px; }
+.timer-display.break { color: var(--blue); }
+.timer-display.done { color: var(--green); }
+.timer-sub { font-size: 13px; color: var(--text2); margin-bottom: 1rem; padding: 0 1rem; }
+.phase-dots { display: flex; gap: 5px; justify-content: center; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.pdot { width: 32px; height: 4px; border-radius: 99px; background: var(--bg3); transition: background 0.3s; }
+.pdot.done { background: var(--green); }
+.pdot.active { background: var(--amber); }
+.pdot.break-dot.active { background: var(--blue); }
+.timer-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.tbtn { padding: 9px 24px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--bg3); color: var(--text); font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.tbtn:hover { background: var(--bg); border-color: var(--border2); }
+.tbtn.primary { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+.tbtn.danger { background: var(--red-bg); color: var(--red); border-color: var(--red-border); }
+.tbtn.amber { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
+.session-log { margin-top: 12px; max-height: 90px; overflow-y: auto; border-top: 0.5px solid var(--border); padding-top: 8px; }
+.log-item { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text3); padding: 2px 0; }
+
+/* SUBS TRACKER */
+.sub-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 8px; }
+.sub-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.sub-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.sub-day { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text3); }
+.sub-status { display: flex; gap: 6px; align-items: center; }
+.sub-btn { padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; border: 0.5px solid var(--border2); background: var(--bg3); color: var(--text2); font-family: 'Space Mono', monospace; transition: all 0.15s; }
+.sub-btn.done { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+.sub-btn:hover { opacity: 0.8; }
+
+/* WEEKLY GRID */
+.wgrid { display: grid; grid-template-columns: 72px repeat(6,1fr); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; font-size: 11px; }
+.wg { padding: 7px 3px; text-align: center; border-right: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); line-height: 1.3; }
+.wg:last-child, .wg:nth-child(7n) { border-right: none; }
+.wg-head { background: var(--bg3); font-family: 'Space Mono', monospace; font-size: 9px; font-weight: 700; color: var(--text3); letter-spacing: 0.06em; }
+.wg-lbl { background: var(--bg3); font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text3); text-align: right; padding-right: 6px; }
+.wg-college { background: var(--bg); color: var(--text3); }
+.wg-study { background: var(--green-bg); color: var(--green); font-weight: 500; }
+.wg-subs { background: var(--blue-bg); color: var(--blue); font-weight: 500; }
+.wg-rest { color: var(--text3); }
+.wg-free { background: var(--amber-bg); color: var(--amber); font-weight: 500; }
+
+/* DOPAMINE BARS */
+.dbar-row { display: grid; grid-template-columns: 110px 1fr 40px; gap: 8px; align-items: center; margin-bottom: 10px; }
+.dbar-label { font-size: 12px; color: var(--text2); }
+.dbar-bg { background: var(--bg3); border-radius: 99px; height: 5px; overflow: hidden; }
+.dbar-fill { height: 100%; border-radius: 99px; }
+.dbar-val { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text3); text-align: right; }
+
+/* STREAK DISPLAY */
+.streak-hero { text-align: center; padding: 1.5rem 0 1rem; }
+.streak-num { font-family: 'Space Mono', monospace; font-size: 64px; font-weight: 700; color: var(--amber); line-height: 1; }
+.streak-lbl { font-size: 13px; color: var(--text2); margin-top: 4px; }
+.streak-msg { font-size: 14px; color: var(--text3); margin-top: 8px; font-style: italic; }
+
+/* MOBILE TWEAKS */
+@media(max-width:480px) {
+  .metrics { grid-template-columns: repeat(3,1fr); }
+  .metric-num { font-size: 18px; }
+  .timer-display { font-size: 48px; }
+  .wgrid { font-size: 10px; }
+  .wg { padding: 5px 2px; }
+  .page { padding: 1rem 0.75rem 4rem; }
+}
+
+/* RESET LINK */
+.danger-link { font-size: 11px; color: var(--red); cursor: pointer; text-decoration: underline; opacity: 0.6; }
+.danger-link:hover { opacity: 1; }
+
+/* DIVIDER */
+.divider { height: 0.5px; background: var(--border); margin: 1rem 0; }
+
+/* IDENTITY CARD */
+.identity-card { background: var(--bg3); border: 1px solid var(--amber-border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 10px; text-align: center; }
+.identity-text { font-size: 14px; color: var(--amber); line-height: 1.7; font-style: italic; }
+
+/* QUOTE */
+.quote { border-left: 2px solid var(--amber-border); padding: 0.5rem 1rem; margin: 10px 0; }
+.quote-text { font-size: 13px; color: var(--text2); line-height: 1.65; font-style: italic; }
+.quote-src { font-size: 11px; color: var(--text3); margin-top: 4px; font-family: 'Space Mono', monospace; }
+
+/* CHECKBOX TOGGLE for mid-term */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid var(--border); }
+.toggle-row:last-child { border-bottom: none; }
+.toggle-label { font-size: 13px; color: var(--text2); }
+.toggle-label strong { color: var(--text); font-weight: 600; }
+.toggle-btn { padding: 4px 12px; font-size: 11px; font-weight: 700; font-family: 'Space Mono', monospace; border-radius: 4px; cursor: pointer; border: 0.5px solid var(--border2); background: var(--bg3); color: var(--text2); transition: all 0.15s; }
+.toggle-btn.on { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">⚔ WAR ROOM</div>
+  <button class="nav-tab active" onclick="goTo('dashboard')">Dashboard</button>
+  <button class="nav-tab" onclick="goTo('schedule')">Schedule</button>
+  <button class="nav-tab" onclick="goTo('plan')">7-Day Plan</button>
+  <button class="nav-tab" onclick="goTo('timer')">Timer</button>
+  <button class="nav-tab" onclick="goTo('subs')">Submissions</button>
+  <button class="nav-tab" onclick="goTo('focus')">Focus System</button>
+  <button class="nav-tab" onclick="goTo('recovery')">Recovery</button>
+</nav>
+
+<!-- DASHBOARD -->
+<div id="p-dashboard" class="page active">
+  <div class="page-header">
+    <div class="page-label">Pirate's War Room — 4 CE B, AIT</div>
+    <div class="page-title">Mission Control</div>
+    <div class="page-sub">AI Roadmap + GTU Sem 4. Both. No excuses.</div>
+  </div>
+
+  <div class="streak-hero">
+    <div class="streak-num" id="d-streak">0</div>
+    <div class="streak-lbl">day streak</div>
+    <div class="streak-msg" id="d-streak-msg">Arjuna hasn't picked up the bow yet.</div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-num" id="d-tasks">0/21</div>
+      <div class="metric-lbl">tasks done</div>
+    </div>
+    <div class="metric blue">
+      <div class="metric-num" id="d-exam-days">56</div>
+      <div class="metric-lbl">days to exam</div>
+    </div>
+    <div class="metric green">
+      <div class="metric-num" id="d-subs-done">0/6</div>
+      <div class="metric-lbl">subs this week</div>
+    </div>
+  </div>
+
+  <div class="pbar-wrap">
+    <div class="pbar-fill green" id="d-progress" style="width:0%"></div>
+  </div>
+  <div style="font-size:11px;color:var(--text3);margin-bottom:1.25rem;font-family:'Space Mono',monospace;" id="d-progress-text">0% — Week 1 not started</div>
+
+  <div class="sec-label">Today's Agenda</div>
+  <div class="card" id="today-card">
+    <div class="card-title">Loading today's tasks...</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="sec-label">Exam Countdown — GTU Sem 4</div>
+  <div class="card">
+    <div class="row">
+      <div class="row-num">→</div>
+      <div class="row-text"><strong>Term ends:</strong> 6 May 2026</div>
+    </div>
+    <div class="row">
+      <div class="row-num">→</div>
+      <div class="row-text"><strong>Exam starts:</strong> ~19 May 2026</div>
+    </div>
+    <div class="row">
+      <div class="row-num">→</div>
+      <div class="row-text"><strong>Exam ends:</strong> ~12 June 2026</div>
+    </div>
+    <div class="row">
+      <div class="row-num">!</div>
+      <div class="row-text"><strong>Post-exam (June 13+):</strong> Full throttle AI mode. 4–5 hrs/day. This is the Phase 3 launch.</div>
+    </div>
+  </div>
+
+  <div class="identity-card">
+    <div class="identity-text">"Engineers who build AI companies study daily.<br>People who watch reels daily talk about building AI companies."</div>
+  </div>
+
+  <div class="sec-label">Quick Actions</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <button class="tbtn primary" onclick="goTo('timer')">▶ Start Session</button>
+    <button class="tbtn amber" onclick="goTo('plan')">☑ Mark Tasks</button>
+    <button class="tbtn" onclick="goTo('subs')">📋 Submissions</button>
+  </div>
+</div>
+
+<!-- SCHEDULE -->
+<div id="p-schedule" class="page">
+  <div class="page-header">
+    <div class="page-label">Your Real Timetable</div>
+    <div class="page-title">The 9 PM Kingdom</div>
+    <div class="page-sub">Hostel → 1hr travel → college → 1hr back. 9 PM is your real start.</div>
+  </div>
+
+  <div class="sec-label">Mon–Fri Daily Routine</div>
+  <div class="card">
+    <div class="row"><div class="row-time">7:00 AM</div><div class="row-text"><span class="badge b-gray">ROUTINE</span> Wake up. Get ready. Breakfast. No study pressure.</div></div>
+    <div class="row"><div class="row-time">8:15 AM</div><div class="row-text"><span class="badge b-gray">TRAVEL</span> Leave hostel. 45–60 min to AIT. Podcast or music — not study time.</div></div>
+    <div class="row"><div class="row-time">9:00 AM</div><div class="row-text"><span class="badge b-gray">COLLEGE</span> Actually attend. Darshana Patel teaches ADA — that's your roadmap topic live.</div></div>
+    <div class="row"><div class="row-time">3:40 PM</div><div class="row-text"><span class="badge b-gray">TRAVEL</span> Leave AIT. Reach hostel ~4:30–4:45 PM.</div></div>
+    <div class="row"><div class="row-time">4:45 PM</div><div class="row-text"><span class="badge b-gray">RECHARGE</span> Full rest. Eat, sleep, cricket, reels — guilt-free. Brain needs this.</div></div>
+    <div class="row"><div class="row-time">9:00 PM</div><div class="row-text"><span class="badge b-green">PYTHON</span> <strong>Block 1 — 90 min.</strong> AI roadmap. Phone leaves the room. Forest app on. This is sacred.</div></div>
+    <div class="row"><div class="row-time">10:35 PM</div><div class="row-text"><span class="badge b-blue">GTU</span> <strong>Block 2 — 75 min.</strong> Submissions/practicals rotation. One subject per night.</div></div>
+    <div class="row"><div class="row-time">11:50 PM</div><div class="row-text"><span class="badge b-gray">LOG</span> Mark tasks done. Check tomorrow. Close laptop. Sleep by 12.</div></div>
+  </div>
+
+  <div class="sec-label">Saturday (Your Power Day)</div>
+  <div class="card">
+    <div class="row"><div class="row-time">10:00 AM</div><div class="row-text"><span class="badge b-green">DEEP WORK</span> <strong>3-hour Python session.</strong> Build week's project. Push to GitHub.</div></div>
+    <div class="row"><div class="row-time">1:00 PM</div><div class="row-text"><span class="badge b-gray">REST</span> Full rest. Lunch, nap, cricket. You've already won the day.</div></div>
+    <div class="row"><div class="row-time">9:00 PM</div><div class="row-text"><span class="badge b-blue">REVIEW</span> <strong>15 min weekly review</strong> then 75 min submissions catchup.</div></div>
+  </div>
+
+  <div class="sec-label">The 9–12 PM Split Explained</div>
+  <div class="card">
+    <div class="card-title">Why Python goes FIRST, GTU second</div>
+    <div class="row"><div class="row-num">→</div><div class="row-text">At 9 PM you're rested after 4 hrs of break. <strong>Hard creative work first, mechanical work second.</strong></div></div>
+    <div class="row"><div class="row-num">→</div><div class="row-text">If GTU submissions go first, your brain rewards itself by skipping Python. Tested pattern — GTU always wins the coin toss if it goes first.</div></div>
+    <div class="row"><div class="row-num">!</div><div class="row-text">Submission due tomorrow? Extend Block 2 to 90 min. <strong>Never cut Block 1 below 60 min.</strong> 60 min is the floor. Non-negotiable.</div></div>
+  </div>
+
+  <div class="sec-label">Weekly Overview</div>
+  <div class="card" style="padding:1rem;overflow-x:auto;">
+    <div class="wgrid">
+      <div class="wg wg-head"></div>
+      <div class="wg wg-head">MON</div><div class="wg wg-head">TUE</div><div class="wg wg-head">WED</div>
+      <div class="wg wg-head">THU</div><div class="wg wg-head">FRI</div><div class="wg wg-head">SAT</div>
+      <div class="wg wg-lbl">morning</div>
+      <div class="wg wg-rest">routine</div><div class="wg wg-rest">routine</div><div class="wg wg-rest">routine</div>
+      <div class="wg wg-rest">routine</div><div class="wg wg-rest">routine</div><div class="wg wg-free">Python 3h</div>
+      <div class="wg wg-lbl">9–4 PM</div>
+      <div class="wg wg-college">college</div><div class="wg wg-college">college</div><div class="wg wg-college">college</div>
+      <div class="wg wg-college">college</div><div class="wg wg-college">college</div><div class="wg wg-rest">free</div>
+      <div class="wg wg-lbl">4–9 PM</div>
+      <div class="wg wg-rest">rest</div><div class="wg wg-rest">rest</div><div class="wg wg-rest">rest</div>
+      <div class="wg wg-rest">rest</div><div class="wg wg-rest">rest</div><div class="wg wg-rest">rest</div>
+      <div class="wg wg-lbl">9–10:30</div>
+      <div class="wg wg-study">Python</div><div class="wg wg-study">Python</div><div class="wg wg-study">Python</div>
+      <div class="wg wg-study">Python</div><div class="wg wg-study">Python</div><div class="wg wg-subs">review</div>
+      <div class="wg wg-lbl">10:35–12</div>
+      <div class="wg wg-subs">OS</div><div class="wg wg-subs">OOP</div><div class="wg wg-subs">ADA</div>
+      <div class="wg wg-subs">COA</div><div class="wg wg-subs">DMGT/ES</div><div class="wg wg-subs">catchup</div>
+    </div>
+  </div>
+</div>
+
+<!-- 7-DAY PLAN -->
+<div id="p-plan" class="page">
+  <div class="page-header">
+    <div class="page-label">Python — Week 1 Battle Plan</div>
+    <div class="page-title">7-Day Starter</div>
+    <div class="page-sub">Tap tasks to mark done. Progress saves on this device.</div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric"><div class="metric-num" id="p-tasks">0/21</div><div class="metric-lbl">tasks done</div></div>
+    <div class="metric green"><div class="metric-num" id="p-days">0/7</div><div class="metric-lbl">days done</div></div>
+    <div class="metric"><div class="metric-num" id="p-streak">0</div><div class="metric-lbl">streak</div></div>
+  </div>
+  <div class="pbar-wrap"><div class="pbar-fill green" id="p-bar" style="width:0%"></div></div>
+  <div style="font-size:11px;color:var(--text3);margin-bottom:1.25rem;font-family:'Space Mono',monospace;" id="p-pct">0% complete</div>
+
+  <div id="plan-days"></div>
+
+  <div style="margin-top:1rem;text-align:center;">
+    <span class="danger-link" onclick="resetPlan()">Reset all tasks</span>
+  </div>
+</div>
+
+<!-- TIMER -->
+<div id="p-timer" class="page">
+  <div class="page-header">
+    <div class="page-label">Focus Timer</div>
+    <div class="page-title">90-Minute Sprint Session</div>
+    <div class="page-sub">4 sprints. Your brain gets a completion signal every 20–25 min.</div>
+  </div>
+
+  <div class="card">
+    <div class="timer-wrap">
+      <div class="timer-phase" id="t-phase">Ready</div>
+      <div class="phase-dots" id="t-dots"></div>
+      <div class="timer-display" id="t-display">20:00</div>
+      <div class="timer-sub" id="t-sub">Hardest task first. No warmup. First 5 minutes will feel awful — that's normal.</div>
+    </div>
+    <div class="timer-btns">
+      <button class="tbtn primary" id="t-btn-start" onclick="timerAction()">▶ Start Session</button>
+      <button class="tbtn danger" id="t-btn-reset" onclick="timerReset()" style="display:none;">↺ Reset</button>
+    </div>
+    <div class="session-log" id="t-log"></div>
+  </div>
+
+  <div class="sec-label">Session Structure</div>
+  <div class="card">
+    <div class="row"><div class="row-time">0:00</div><div class="row-text"><span class="badge b-amber">SPRINT 1</span> <strong>20 min</strong> — Hardest task first. No warmup. Push through first 5 min.</div></div>
+    <div class="row"><div class="row-time">0:20</div><div class="row-text"><span class="badge b-blue">BREAK</span> <strong>3 min</strong> — Stand, stretch, water. No phone. Body break, not dopamine break.</div></div>
+    <div class="row"><div class="row-time">0:23</div><div class="row-text"><span class="badge b-amber">SPRINT 2</span> <strong>25 min</strong> — You're in flow now. Same task or next one. Keep building.</div></div>
+    <div class="row"><div class="row-time">0:48</div><div class="row-text"><span class="badge b-blue">BREAK</span> <strong>3 min</strong> — Same rules. No phone.</div></div>
+    <div class="row"><div class="row-time">0:51</div><div class="row-text"><span class="badge b-amber">SPRINT 3</span> <strong>25 min</strong> — Apply it. Write actual code, not just read.</div></div>
+    <div class="row"><div class="row-time">1:16</div><div class="row-text"><span class="badge b-green">FINISH</span> <strong>14 min</strong> — Wrap up. Push to GitHub. Write 2 sentences about what you learned.</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">The First 5 Minutes Are Lies</div>
+    <div class="card-body">When your brain says "I don't feel like this" at minute 1 — that is not truth, that is <strong style="color:var(--amber)">withdrawal</strong>. Your brain wants a reel hit. The feeling passes at minute 12–15 when flow kicks in. Your only job: survive the first 5 minutes without escaping.</div>
+  </div>
+</div>
+
+<!-- SUBMISSIONS -->
+<div id="p-subs" class="page">
+  <div class="page-header">
+    <div class="page-label">Block 2 — 10:35 PM to 11:50 PM</div>
+    <div class="page-title">Submissions Tracker</div>
+    <div class="page-sub">One subject per night. Nothing piles up. Mark done each day.</div>
+  </div>
+
+  <div class="sec-label">This Week's Rotation</div>
+  <div id="subs-cards"></div>
+
+  <div class="sec-label">When Mid-II Is Announced</div>
+  <div class="card">
+    <div class="row"><div class="row-num">!</div><div class="row-text"><strong>2 weeks before Mid-II:</strong> Block 2 becomes pure exam revision. All 6 subjects rotate.</div></div>
+    <div class="row"><div class="row-num">!</div><div class="row-text"><strong>Block 1 (Python) stays at 90 min</strong> even during Mid-II week. It won't hurt performance — it keeps your brain sharp.</div></div>
+    <div class="row"><div class="row-num">!</div><div class="row-text">Use your existing GitHub Pages study apps: OOP app, ADA notes, COA tracker. You built them for this exact moment.</div></div>
+  </div>
+
+  <div class="sec-label">Mid-II Prep Mode Toggle</div>
+  <div class="card">
+    <div class="toggle-row">
+      <div class="toggle-label"><strong>Mid-II dates announced</strong> — switch Block 2 to exam revision</div>
+      <button class="toggle-btn" id="midterm-toggle" onclick="toggleMidterm()">OFF</button>
+    </div>
+    <div id="midterm-note" style="display:none;margin-top:8px;padding:8px;background:var(--amber-bg);border-radius:var(--radius);border:0.5px solid var(--amber-border);">
+      <div style="font-size:12px;color:var(--amber);">Mid-II mode active. Block 2 = exam revision only. Use your study apps. Python Block 1 unchanged.</div>
+    </div>
+  </div>
+
+  <div style="margin-top:1rem;text-align:center;">
+    <span class="danger-link" onclick="resetSubs()">Reset this week's submissions</span>
+  </div>
+</div>
+
+<!-- FOCUS SYSTEM -->
+<div id="p-focus" class="page">
+  <div class="page-header">
+    <div class="page-label">Dopamine Reset</div>
+    <div class="page-title">Focus + Anti-Distraction</div>
+    <div class="page-sub">Your phone is Walter White. You are Jesse. This is the intervention.</div>
+  </div>
+
+  <div class="sec-label">Why You Keep Quitting</div>
+  <div class="card">
+    <div class="row"><div class="row-num">01</div><div class="row-text"><strong>Dopamine baseline shifted upward.</strong> Reels give a hit every 8 seconds. Studying gives one after 45 minutes. Your brain now finds anything slower than 8 sec physically uncomfortable.</div></div>
+    <div class="row"><div class="row-num">02</div><div class="row-text"><strong>Attention span fractured.</strong> Reels train a context switch every 8–15 sec. 15 seconds of no new hit = your brain signals boredom and you grab the phone. Automatically. Not consciously.</div></div>
+    <div class="row"><div class="row-num">03</div><div class="row-text"><strong>No stakes.</strong> Skipping a session costs you nothing. Your brain is rational — it won't pay effort for zero cost of quitting.</div></div>
+    <div class="row"><div class="row-num">!</div><div class="row-text"><strong>The fix is NOT willpower.</strong> You need: (a) lower dopamine floor, (b) increase reward from studying, (c) add real consequences. All three at once.</div></div>
+  </div>
+
+  <div class="sec-label">Dopamine Competition Map</div>
+  <div class="card">
+    <div class="dbar-row"><div class="dbar-label">Reels / shorts</div><div class="dbar-bg"><div class="dbar-fill" style="width:96%;background:var(--red);"></div></div><div class="dbar-val">96%</div></div>
+    <div class="dbar-row"><div class="dbar-label">Cricket / kabaddi</div><div class="dbar-bg"><div class="dbar-fill" style="width:80%;background:var(--amber);"></div></div><div class="dbar-val">80%</div></div>
+    <div class="dbar-row"><div class="dbar-label">Games / movies</div><div class="dbar-bg"><div class="dbar-fill" style="width:72%;background:var(--amber);"></div></div><div class="dbar-val">72%</div></div>
+    <div class="dbar-row"><div class="dbar-label">Study (current)</div><div class="dbar-bg"><div class="dbar-fill" style="width:18%;background:var(--text3);"></div></div><div class="dbar-val">18%</div></div>
+    <div class="dbar-row"><div class="dbar-label">Study (with system)</div><div class="dbar-bg"><div class="dbar-fill" style="width:60%;background:var(--green);"></div></div><div class="dbar-val">60%</div></div>
+    <div style="font-size:12px;color:var(--text3);margin-top:4px;">Goal: lower the competition's bar, not raise studying to reel-level stimulation.</div>
+  </div>
+
+  <div class="sec-label">3-Step Pre-Session Protocol (Do Every Night at 9 PM)</div>
+  <div class="card">
+    <div class="row"><div class="row-num">S1</div><div class="row-text"><strong>Phone physically leaves the room.</strong> Not silent. Not face-down. Another room. The 2-second friction stops 80% of impulse grabs.</div></div>
+    <div class="row"><div class="row-num">S2</div><div class="row-text"><strong>Write one sentence on paper:</strong> "Tonight I will ___." Be specific. "Complete Day 3 conditionals and write a grade checker" — not "do Python."</div></div>
+    <div class="row"><div class="row-num">S3</div><div class="row-text"><strong>Start the timer</strong> (Timer tab). Don't check anything. Press start. The ritual of pressing start is a Pavlovian trigger — your brain learns: timer on = focus mode.</div></div>
+  </div>
+
+  <div class="sec-label">Stakes — Manufacture Consequences</div>
+  <div class="card">
+    <div class="row"><div class="row-num">→</div><div class="row-text"><strong>GitHub public streak.</strong> JayVegada — push code every day. A broken streak is a public blank square visible to recruiters. That stings more than you think.</div></div>
+    <div class="row"><div class="row-num">→</div><div class="row-text"><strong>The ₹50 bet.</strong> Tell one friend: "If I don't complete my Python task today, I'll pay you ₹50." Small amount. Social embarrassment of losing = devastating.</div></div>
+    <div class="row"><div class="row-num">→</div><div class="row-text"><strong>Reels as earned reward, not default.</strong> Before 9 PM = free reels. 9–12 PM = zero reels. After 12 AM = 20 min earned. This is the single biggest shift.</div></div>
+    <div class="row"><div class="row-num">→</div><div class="row-text"><strong>Digital Wellbeing timer:</strong> 45 min/day Instagram, 30 min/day YouTube. When the timer hits, it locks. The pause makes the choice conscious instead of automatic.</div></div>
+  </div>
+
+  <div class="sec-label">Reward Tiers — What You Earn</div>
+  <div class="card">
+    <div class="row"><div class="row-num"><span class="badge b-gray">3 DAY</span></div><div class="row-text">Watch one episode guilt-free. 4.5 hrs of work = 1 hr entertainment. Fair trade your brain accepts.</div></div>
+    <div class="row"><div class="row-num"><span class="badge b-blue">7 DAY</span></div><div class="row-text">Buy something small you've been wanting (under ₹200). Post your GitHub streak — the post is itself a dopamine reward.</div></div>
+    <div class="row"><div class="row-num"><span class="badge b-amber">21 DAY</span></div><div class="row-text">Habit is rewired. Upgrade your dev setup — new VS Code theme, anything that signals "I'm a developer." Identity anchoring.</div></div>
+    <div class="row"><div class="row-num"><span class="badge b-green">7 WEEK</span></div><div class="row-text">Python done. Deploy your first real project publicly. Share it. This is when the roadmap stops being abstract and becomes your identity.</div></div>
+  </div>
+
+  <div class="sec-label">Phone Control — 5 Specific Moves</div>
+  <div class="card">
+    <div class="row"><div class="row-num">01</div><div class="row-text"><strong>Delete Instagram + YouTube from home screen.</strong> Move to folder inside folder, page 3. 4 extra taps = 40% fewer impulse opens.</div></div>
+    <div class="row"><div class="row-num">02</div><div class="row-text"><strong>Digital Wellbeing app timers.</strong> Set them now, not later. "Later" means never.</div></div>
+    <div class="row"><div class="row-num">03</div><div class="row-text"><strong>Grayscale mode during study.</strong> Settings → Accessibility → Color correction → Grayscale. Reels in black and white lose 60% of their pull. Sounds stupid, works embarrassingly well.</div></div>
+    <div class="row"><div class="row-num">04</div><div class="row-text"><strong>Forest app — 9 PM block.</strong> Plant a tree. 90 min. Phone use kills it. Your streak funds actual trees. Killing trees is below Pirate's brand.</div></div>
+    <div class="row"><div class="row-num">05</div><div class="row-text"><strong>Phone charges on desk, not pillow.</strong> Last 15 min before sleep is when reels do the most damage — they delay sleep and wire your brain to need stimulation to fall asleep.</div></div>
+  </div>
+
+  <div class="sec-label">Weekly Review — Every Saturday (10 Minutes)</div>
+  <div class="card">
+    <div class="row"><div class="row-num">Q1</div><div class="row-text">How many days did I study this week? (Target: 6/7)</div></div>
+    <div class="row"><div class="row-num">Q2</div><div class="row-text">What did I actually learn? Name 3 concepts you can explain right now.</div></div>
+    <div class="row"><div class="row-num">Q3</div><div class="row-text">What stopped me on missed days? Identify the root cause, not the excuse.</div></div>
+    <div class="row"><div class="row-num">Q4</div><div class="row-text">What one thing do I change next week?</div></div>
+    <div class="row"><div class="row-num">Q5</div><div class="row-text">Am I on Phase 1 track for June 13 Phase 3 launch?</div></div>
+  </div>
+</div>
+
+<!-- RECOVERY -->
+<div id="p-recovery" class="page">
+  <div class="page-header">
+    <div class="page-label">When Things Go Wrong</div>
+    <div class="page-title">Recovery Protocol</div>
+    <div class="page-sub">Missing a day is human. Missing two is a pattern. Missing three is quitting with extra steps.</div>
+  </div>
+
+  <div class="sec-label">When You Miss A Day</div>
+  <div class="card">
+    <div class="row"><div class="row-num">01</div><div class="row-text"><strong>Don't guilt spiral.</strong> Gus Fring never panicked when a plan failed. He assessed, adapted, continued. One missed session doesn't undo your identity.</div></div>
+    <div class="row"><div class="row-num">02</div><div class="row-text"><strong>Don't double up to compensate.</strong> 4 hours next day = burnout + broken rhythm. Just do the normal 90 min.</div></div>
+    <div class="row"><div class="row-num">03</div><div class="row-text"><strong>Write one sentence: why did you miss?</strong> Not to feel guilty — to fix the cause. "Missed because went out" → add a 8:30 PM reminder alarm before unplanned events.</div></div>
+    <div class="row"><div class="row-num">04</div><div class="row-text"><strong>If you miss TWO days,</strong> Emergency Mode triggers: next day is mandatory, 9 PM sharp, no negotiation, Forest app, write the task on paper before sitting down.</div></div>
+  </div>
+
+  <div class="sec-label">When You Feel Zero Motivation (The 2-Minute Starter)</div>
+  <div class="card">
+    <div class="card-body" style="margin-bottom:10px;">Motivation follows action — it does not precede it. Waiting to feel ready is waiting for rain in Rajasthan in December.</div>
+    <div class="row"><div class="row-num">→</div><div class="row-text">Open VS Code or Python IDE. Just open it. Nothing else.</div></div>
+    <div class="row"><div class="row-num">→</div><div class="row-text">Type <code style="font-family:'Space Mono',monospace;font-size:12px;background:var(--bg3);padding:1px 5px;border-radius:3px;">print("I'm here")</code> and run it. That's your full commitment for now.</div></div>
+    <div class="row"><div class="row-num">→</div><div class="row-text">Continue from exactly where you left off. No reviewing from the start. Forward only.</div></div>
+    <div class="row"><div class="row-num">→</div><div class="row-text">90% of the time you'll study the full session. The hardest part is opening the laptop.</div></div>
+  </div>
+
+  <div class="sec-label">3-Phase Master Strategy (Zoom Out)</div>
+  <div class="card">
+    <div class="row">
+      <div class="row-num"><span class="badge b-green">P1</span></div>
+      <div class="row-text"><strong>Now → May 6.</strong> Double track. 90 min Python every night. GTU via AIT classes. Complete 7-day plan Week 1, then intermediate Python Weeks 2–4.</div>
+    </div>
+    <div class="row">
+      <div class="row-num"><span class="badge b-red">P2</span></div>
+      <div class="row-text"><strong>May 6 → June 12.</strong> GTU exam mode. Python drops to maintenance (60 min/day minimum). Full focus on OS, OOP, ADA, COA, DMGT, ES.</div>
+    </div>
+    <div class="row">
+      <div class="row-num"><span class="badge b-amber">P3</span></div>
+      <div class="row-text"><strong>June 13 → onwards.</strong> Full throttle. No college = 4–5 hrs/day. Python → NumPy/Pandas → ML basics → first real project. This is launch.</div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <div class="quote-text">"A man is great not by strength alone, but by how he conducts himself when no one is watching, when there is no reward, when there is no pressure. That is character."</div>
+    <div class="quote-src">— Vidura, Mahabharata</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">The Arjuna Principle</div>
+    <div class="card-body">Arjuna didn't train when he felt like it. Dronacharya didn't say "practice when motivated." He gave Arjuna a daily structure that made skill <strong style="color:var(--text)">inevitable</strong>. Your roadmap is Dronacharya. Follow the schedule, not your mood.</div>
+  </div>
+</div>
+
+<script>
+const DAYS = [
+  { day:1, theme:"Setup + Variables", tasks:["Install Python + VS Code. Run hello world successfully.","Learn: variables, data types (int, str, float, bool). Understand the difference.","Practice: write 5 print statements with different data types. Experiment."] },
+  { day:2, theme:"Input + Operators", tasks:["Learn: input(), arithmetic operators, string concatenation.","Practice: build a simple calculator that adds and subtracts.","Challenge: program that takes your name and age, prints a full sentence."] },
+  { day:3, theme:"Conditionals", tasks:["Learn: if, elif, else. Understand indentation — Python's most punished rookie mistake.","Practice: write 3 programs using if-else logic.","Challenge: grade checker — input score, print A/B/C/D/F."] },
+  { day:4, theme:"Loops", tasks:["Learn: for loop, while loop, range(). Know when to use which.","Practice: print multiplication table of any number using a loop.","Challenge: FizzBuzz. If you can't write it, your Python foundation has gaps."] },
+  { day:5, theme:"Lists + Functions", tasks:["Learn: lists, indexing, append(), len(), slicing.","Learn: define functions with def keyword, parameters, return.","Practice: function that takes a list and returns its sum. Test with 5 inputs."] },
+  { day:6, theme:"Dicts + File I/O", tasks:["Learn: dictionaries — key-value pairs. Most used data structure in Python.","Learn: open(), read/write to a .txt file. Understand file modes.","Practice: build a contact book that saves names+numbers to a file."] },
+  { day:7, theme:"Mini Project + Review", tasks:["Build a small CLI project using concepts from Days 1–6. Your choice.","Push your code to GitHub (JayVegada). Even if it's messy. Public = accountable.","Do the 5-question weekly review. Write honest answers, not what sounds good."] }
+];
+
+const SUBS = [
+  { id:'os',  name:'OS', teacher:'Namrata Gohel',    day:'Monday',    focus:'Practicals, viva prep, lab file work.' },
+  { id:'oop', name:'OOP', teacher:'Archana Jethava', day:'Tuesday',   focus:'C++ programs, practical file, lab outputs.' },
+  { id:'ada', name:'ADA', teacher:'Darshana Patel',  day:'Wednesday', focus:'Algorithm implementations, analysis write-ups.' },
+  { id:'coa', name:'COA', teacher:'Monica Prajapati',day:'Thursday',  focus:'Circuit diagrams, assembly, practicals.' },
+  { id:'dmt', name:'DMGT + ES', teacher:'Reena Patel / Himani Bhatt', day:'Friday', focus:'40 min DMGT assignments + 35 min ES report work.' },
+  { id:'sat', name:'Catchup / Mid-II Prep', teacher:'All subjects', day:'Saturday', focus:'Most urgent deadline, or exam revision once dates announced.' }
+];
+
+const TIMER_PHASES = [
+  { name:'Sprint 1', dur:20*60, type:'work',  sub:'Hardest task first. No warmup. First 5 min will feel awful — push through.' },
+  { name:'Break',    dur:3*60,  type:'break', sub:'Stand up. Stretch. Water. No phone — body break, not dopamine break.' },
+  { name:'Sprint 2', dur:25*60, type:'work',  sub:"You should be in flow now. If you're not, you will be in 3 minutes." },
+  { name:'Break',    dur:3*60,  type:'break', sub:'Same rules. No phone. 3 minutes only.' },
+  { name:'Sprint 3', dur:25*60, type:'work',  sub:'Apply it. Write actual code, not just read.' },
+  { name:'Finish',   dur:14*60, type:'done',  sub:'Wrap up. Push to GitHub. Write 2 sentences about what you learned.' }
+];
+
+// STATE
+function load(k,d){try{return JSON.parse(localStorage.getItem(k))??d;}catch{return d;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+
+let tasks = load('wr_tasks', {});
+let subsDone = load('wr_subs', {});
+let midterm = load('wr_midterm', false);
+let tState = { running:false, phase:0, left:0, interval:null, started:false };
+
+// NAV
+function goTo(name) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('p-'+name).classList.add('active');
+  event.target.classList.add('active');
+  if(name==='plan') renderPlan();
+  if(name==='dashboard') renderDashboard();
+  if(name==='subs') renderSubs();
+}
+
+// STREAK MESSAGES
+function streakMsg(n) {
+  if(n===0) return "Arjuna hasn't picked up the bow yet.";
+  if(n===1) return "Day 1 done. The hardest day is behind you.";
+  if(n===2) return "Two days. The pattern is forming.";
+  if(n===3) return "Three days. Dronacharya is watching.";
+  if(n<=6) return `${n} days. You're building something real.`;
+  if(n===7) return "Week 1 complete. Full Arjuna mode unlocked.";
+  if(n<=13) return `${n} day streak. Gus Fring energy.`;
+  if(n<=20) return `${n} days. This is becoming who you are.`;
+  if(n===21) return "21 days. The habit is rewired. Celebrate.";
+  return `${n} days. You're not the same person who started.`;
+}
+
+// RENDER DASHBOARD
+function renderDashboard() {
+  let total=0, done=0, streak=0;
+  DAYS.forEach(d=>{
+    let dayDone=true;
+    d.tasks.forEach((_,i)=>{
+      total++;
+      if(tasks[`${d.day}-${i}`]) done++;
+      else dayDone=false;
+    });
+    if(dayDone && streak===d.day-1) streak=d.day;
+  });
+  let pct=Math.round(done/total*100);
+  document.getElementById('d-streak').textContent=streak;
+  document.getElementById('d-streak-msg').textContent=streakMsg(streak);
+  document.getElementById('d-tasks').textContent=`${done}/${total}`;
+  document.getElementById('d-progress').style.width=pct+'%';
+  document.getElementById('d-progress-text').textContent=`${pct}% — Week 1 ${pct===100?'complete':'in progress'}`;
+  let examDays=Math.max(0,Math.round((new Date('2026-05-19')-new Date())/(86400000)));
+  document.getElementById('d-exam-days').textContent=examDays;
+  let sd=Object.values(subsDone).filter(Boolean).length;
+  document.getElementById('d-subs-done').textContent=`${sd}/6`;
+  // Today card
+  const dow=['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][new Date().getDay()];
+  const subMap={monday:'OS',tuesday:'OOP',wednesday:'ADA',thursday:'COA',friday:'DMGT + ES',saturday:'Catchup'};
+  const nextDay=DAYS.find(d=>!DAYS.slice(0,d.day-1).every(x=>x.tasks.every((_,i)=>tasks[`${x.day}-${i}`]))||d.day===1);
+  const currentDay=DAYS.find(d=>{let allDone=d.tasks.every((_,i)=>tasks[`${d.day}-${i}`]);return !allDone;})||DAYS[6];
+  let todayHtml=`<div class="card-title">Today — ${new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'short'})}</div>`;
+  todayHtml+=`<div class="row"><div class="row-num"><span class="badge b-green">9 PM</span></div><div class="row-text"><strong>Python Block 1 (90 min)</strong> — Day ${currentDay.day}: ${currentDay.theme}</div></div>`;
+  todayHtml+=`<div class="row"><div class="row-num"><span class="badge b-blue">10:35</span></div><div class="row-text"><strong>Submissions Block 2 (75 min)</strong> — ${subMap[dow]||'Catchup / Review'}</div></div>`;
+  document.getElementById('today-card').innerHTML=todayHtml;
+}
+
+// RENDER PLAN
+function renderPlan() {
+  let total=0, done=0, streak=0;
+  let html='';
+  DAYS.forEach(d=>{
+    let dayDone=true;
+    d.tasks.forEach((_,i)=>{
+      total++;
+      if(tasks[`${d.day}-${i}`]) done++;
+      else dayDone=false;
+    });
+    let tdone=d.tasks.filter((_,i)=>tasks[`${d.day}-${i}`]).length;
+    if(dayDone && streak===d.day-1) streak=d.day;
+    let cls='day-card'+(dayDone?' complete':'')+((!dayDone&&d.day===streak+1)?' current':'');
+    html+=`<div class="${cls}">
+      <div class="day-header">
+        <div class="day-name">Day ${d.day} — ${d.theme}</div>
+        <div class="day-progress">${tdone}/${d.tasks.length}</div>
+      </div>`;
+    d.tasks.forEach((t,i)=>{
+      let dk=`${d.day}-${i}`;
+      let isDone=!!tasks[dk];
+      html+=`<div class="task-item" onclick="toggleTask('${dk}')">
+        <div class="task-cb${isDone?' done':''}"></div>
+        <div class="task-label${isDone?' done':''}">${t}</div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  document.getElementById('plan-days').innerHTML=html;
+  let pct=Math.round(done/total*100);
+  document.getElementById('p-tasks').textContent=`${done}/${total}`;
+  document.getElementById('p-days').textContent=`${streak}/7`;
+  document.getElementById('p-streak').textContent=streak;
+  document.getElementById('p-bar').style.width=pct+'%';
+  document.getElementById('p-pct').textContent=`${pct}% complete — ${streakMsg(streak)}`;
+}
+
+function toggleTask(k) {
+  tasks[k]=!tasks[k];
+  save('wr_tasks',tasks);
+  renderPlan();
+}
+
+function resetPlan() {
+  if(!confirm('Reset all tasks? This clears your progress.')) return;
+  tasks={};save('wr_tasks',tasks);renderPlan();
+}
+
+// RENDER SUBS
+function renderSubs() {
+  let html='';
+  const dow=new Date().getDay();
+  const todayMap={1:'os',2:'oop',3:'ada',4:'coa',5:'dmt',6:'sat'};
+  const todaySub=todayMap[dow]||null;
+  SUBS.forEach(s=>{
+    let done=!!subsDone[s.id];
+    let isToday=(s.id===todaySub);
+    html+=`<div class="sub-card" style="${isToday?'border-color:var(--amber-border);':''}">
+      <div class="sub-header">
+        <div>
+          <div class="sub-name">${s.name} ${isToday?'<span class="badge b-amber">TODAY</span>':''}</div>
+          <div class="sub-day" style="margin-top:2px;">${s.teacher} · ${s.day}</div>
+        </div>
+        <button class="sub-btn${done?' done':''}" onclick="toggleSub('${s.id}')">${done?'DONE':'PENDING'}</button>
+      </div>
+      <div style="font-size:12px;color:var(--text3);">${s.focus}</div>
+    </div>`;
+  });
+  document.getElementById('subs-cards').innerHTML=html;
+  let mid=load('wr_midterm',false);
+  document.getElementById('midterm-toggle').textContent=mid?'ON':'OFF';
+  document.getElementById('midterm-toggle').className='toggle-btn'+(mid?' on':'');
+  document.getElementById('midterm-note').style.display=mid?'block':'none';
+}
+
+function toggleSub(id) {
+  subsDone[id]=!subsDone[id];
+  save('wr_subs',subsDone);
+  renderSubs();
+}
+
+function resetSubs() {
+  if(!confirm('Reset this week\'s submissions?')) return;
+  subsDone={};save('wr_subs',subsDone);renderSubs();
+}
+
+function toggleMidterm() {
+  midterm=!midterm;
+  save('wr_midterm',midterm);
+  renderSubs();
+}
+
+// TIMER
+function buildDots() {
+  document.getElementById('t-dots').innerHTML=TIMER_PHASES.map((p,i)=>`<div class="pdot${p.type==='break'?' break-dot':''}" id="td-${i}"></div>`).join('');
+}
+function updateDots() {
+  TIMER_PHASES.forEach((_,i)=>{
+    let d=document.getElementById('td-'+i);
+    if(!d)return;
+    d.className='pdot'+(TIMER_PHASES[i].type==='break'?' break-dot':'')+(i<tState.phase?' done':i===tState.phase?' active':'');
+  });
+}
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function updateTimerDisplay(){
+  let ph=TIMER_PHASES[tState.phase];
+  let disp=document.getElementById('t-display');
+  disp.textContent=fmt(tState.left);
+  disp.className='timer-display'+(ph.type==='break'?' break':ph.type==='done'?' done':'');
+  document.getElementById('t-phase').textContent=ph.name;
+  document.getElementById('t-sub').textContent=ph.sub;
+  updateDots();
+}
+function timerAction(){
+  if(!tState.started){
+    tState.started=true;tState.phase=0;tState.left=TIMER_PHASES[0].dur;tState.running=true;
+    document.getElementById('t-btn-start').textContent='⏸ Pause';
+    document.getElementById('t-btn-reset').style.display='';
+    buildDots();
+    tState.interval=setInterval(timerTick,1000);
+    updateTimerDisplay();return;
+  }
+  tState.running=!tState.running;
+  document.getElementById('t-btn-start').textContent=tState.running?'⏸ Pause':'▶ Resume';
+  if(tState.running){tState.interval=setInterval(timerTick,1000);}
+  else{clearInterval(tState.interval);}
+}
+function timerTick(){
+  if(!tState.running)return;
+  tState.left--;
+  if(tState.left<=0){
+    let ph=TIMER_PHASES[tState.phase];
+    logTimer(ph.name+' complete ✓');
+    tState.phase++;
+    if(tState.phase>=TIMER_PHASES.length){
+      clearInterval(tState.interval);tState.running=false;
+      document.getElementById('t-display').textContent='00:00';
+      document.getElementById('t-display').className='timer-display done';
+      document.getElementById('t-phase').textContent='Session Complete';
+      document.getElementById('t-sub').textContent='Log it. Push to GitHub. Phone earned.';
+      document.getElementById('t-btn-start').style.display='none';
+      updateDots();return;
+    }
+    tState.left=TIMER_PHASES[tState.phase].dur;
+  }
+  updateTimerDisplay();
+}
+function timerReset(){
+  clearInterval(tState.interval);
+  tState={running:false,phase:0,left:0,interval:null,started:false};
+  document.getElementById('t-display').textContent='20:00';
+  document.getElementById('t-display').className='timer-display';
+  document.getElementById('t-phase').textContent='Ready';
+  document.getElementById('t-sub').textContent='Hardest task first. No warmup. First 5 minutes will feel awful — that\'s normal.';
+  document.getElementById('t-btn-start').textContent='▶ Start Session';
+  document.getElementById('t-btn-start').style.display='';
+  document.getElementById('t-btn-reset').style.display='none';
+  document.getElementById('t-dots').innerHTML='';
+  document.getElementById('t-log').innerHTML='';
+}
+function logTimer(msg){
+  let log=document.getElementById('t-log');
+  let t=new Date();let ts=t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0');
+  let el=document.createElement('div');el.className='log-item';el.textContent=ts+'  '+msg;
+  log.prepend(el);
+}
+buildDots();
+
+// INIT
+renderDashboard();
+renderPlan();
+renderSubs();
+</script>
+</body>
+</html>
